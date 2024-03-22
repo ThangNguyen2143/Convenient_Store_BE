@@ -1,0 +1,77 @@
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md">
+            <figure class="figure">
+                <img src="{{sanpham.image}}" class="figure-img img-fluid rounded" alt="{{sanpham.name}}" width="200" height="150">
+                <figcaption class="figure-caption text-right">A caption for the above image.</figcaption>
+            </figure>
+            
+        </div>
+        <div class="col-md">
+            <h3>{{sanpham.name}}</h3>
+            <p>Hiển thị Phần đánh giá sản phẩm</p>
+            <div>
+              <p>{{convertMoney sanpham.price}}</p>
+              <button type="button" class="btn btn-success" data-toggle="modal" data-id="{{this._id}}" data-target="#buyProductModal">Thêm vào giỏ hàng</button>
+            </div>
+            
+            <p>{{sanpham.description}}</p>
+        </div>
+    </div>
+    
+</div>
+<!-- Xác nhận thêm vào giỏ hàng -->
+<div class="modal fade" id="buyProductModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="buyProductModalLabel">Thêm vào giỏ hàng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" name="addCartForm" action="/me/orders">
+                    <div class="form-inline">
+                        <img src="{{sanpham.image}}" alt="{{sanpham.name}}" width="40em" height="50em">
+                        <p class="ml-3" >{{sanpham.name}}</p>
+                    </div>
+                    <div class="form-group mt-3">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="mountProduct">Số lượng: </span>
+                            </div>
+                            <input class="d-none" name="idSp" value="{{sanpham._id}}">
+                            <input type="number" class="form-control"  name="mount" aria-describedby="mountProduct">
+                            <input class="d-none" name="name" value="{{sanpham.name}}">
+                            <input class="d-none" type="number" name="price" value="{{sanpham.price}}">
+                            <input class="d-none" name="image" value="{{sanpham.image}}">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Huỷ</button>
+                <button type="submit" class="btn btn-primary">Thêm</a>
+            </div>
+        </div>
+    </div>  
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+
+        $('#buyProductModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var productId = button.data('id') // Extract info from data-* attributes
+            var modal = $(this)
+
+            
+            var addCartForm = document.forms['addCartForm']
+            var btnAgree = modal.find('.btn-primary')[0]
+            btnAgree.onclick = ()=>{
+                addCartForm.submit()
+            }
+        })
+    })
+</script>

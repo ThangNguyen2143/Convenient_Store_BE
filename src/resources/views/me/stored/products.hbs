@@ -1,0 +1,152 @@
+<form class="mt-4 container-fluid" name="container-form" method="POST" action="/detail/handle-controller">
+    <h3>Gian hàng của tôi</h3>
+    <div class="d-flex flex-row-reverse">
+        <div class="p-2">
+            <div class="input-group-append">
+                <button class="btn btn-outline-primary submit-multi-checked-btn disabled" type="submit">Thực hiện</button>
+            </div>
+        </div>
+        <div class="p-2">
+            <div class="input-group">
+                <select class="custom-select" name="optionAction" required>
+                    <option value="">Hành động</option>
+                    <option value="updatePriceItems">Cập nhật giá</option>
+                    <option value="deleteMultiItems">Xoá nhiều</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="checkAllItem">
+                        <label class="form-check-label" for="checkAllItem">
+                            All
+                        </label>
+                    </div>
+                </th>
+                <th scope="col">
+                    Name 
+                    {{{sortRender 'name' _sort}}}
+                </th>
+                <th scope="col">
+                    Tồn kho
+                    {{{sortRender 'stored' _sort}}}
+                </th>
+                <th scope="col">
+                    Price 
+                    {{{sortRender 'price' _sort}}}
+                </th>
+                <th scope="col">
+                    Cập nhật cuối
+                    {{{sortRender 'updatedAt' _sort}}}
+                </th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each sanpham}}
+            <tr>
+                <th scope="row">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="productIds[]" value="{{this._id}}">
+                    </div>
+                </th>
+                <td id="item_{{this._id}}">{{this.name}}</td>
+                <td>{{this.stored}}</td>
+                <td>{{convertMoney this.price}}</td>
+                <td>{{dateFormat this.updatedAt}}</td>
+                <td>
+                    <a href="/detail/{{this._id}}/edit" class="btn btn-light">Sửa</a>
+                    <button type="button" class="btn btn-light" data-toggle="modal" data-id="{{this._id}}" data-target="#deleteModal">Xoá</button>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="5" class="text-center">
+                    Bạn chưa có sản phẩm nào trong gian hàng!! 
+                    <a href="/detail/create">Đăng sản phẩm</a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    {{!-- <div class="text-right">
+        <a href="/me/trash/products" class="btn btn-success" role="button" aria-pressed="true"><i class="fa-regular fa-trash-can fa-xl "></i></a><span class="badge badge-pill badge-danger">{{deletedCount}}</span>
+    </div> --}}
+</form>
+<!-- Xác nhận xoá -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xoá sản phẩm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" name="deleteForm">
+                    <div class="form-group">
+                        <p id="message-confirm-delete">Message:</p>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Không</button>
+                <button type="submit" class="btn btn-danger">Chắc chắn</a>
+            </div>
+        </div>
+    </div>  
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+
+        $('#deleteModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var productId = button.data('id') // Extract info from data-* attributes
+            var modal = $(this)
+            var nameItem = $('#item_'+productId)[0].innerHTML
+
+            modal.find('#message-confirm-delete').text('Xoá sản phẩm "'+ nameItem +'" phải không?')
+            var deleteForm = document.forms['deleteForm']
+            deleteForm.action = '/detail/' +productId+'?_method=DELETE'
+            var btnAgree = modal.find('.btn-danger')[0]
+            btnAgree.onclick = ()=>{
+                deleteForm.submit()
+            }
+        })
+        var checkAllBtn = $('#checkAllItem')
+        var checkItems = $('input[name="productIds[]"]')
+        var submitMultiBtn = $('.submit-multi-checked-btn')
+
+        checkAllBtn.on('change',()=>{
+            var isCheckedAll = checkAllBtn.prop('checked')
+            checkItems.prop('checked', isCheckedAll)
+            renderSubmitMultiBtn()
+        })
+        checkItems.change(()=>{
+            var isCheckedAll = checkItems.length == $('input[name="productIds[]"]:checked').length
+            checkAllBtn.prop('checked', isCheckedAll)
+            renderSubmitMultiBtn()
+        })
+        submitMultiBtn.on('click', (e)=>{
+            
+            var isSubmitable = submitMultiBtn.hasClass('disabled')
+            
+            if(isSubmitable){
+                e.preventDefault()
+            }
+
+        })
+        function renderSubmitMultiBtn(){
+            var lengthCheckbox = $('input[name="productIds[]"]:checked').length
+            if(lengthCheckbox >1) submitMultiBtn.removeClass('disabled')
+            else submitMultiBtn.addClass('disabled')
+        }
+    })
+    
+</script>

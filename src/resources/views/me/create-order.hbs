@@ -1,0 +1,134 @@
+<div class="container mt-4">
+    <form action="/me/orderByAdmin" method="post">
+        <h4 class="text-center">HOÁ ĐƠN GTGT</h4>
+        <div class="row">
+            <div class="form-group col-sm-6">
+                <label for="nameCustomer">Khách hàng</label>
+                <input type="text" class="form-control" id="nameCustomer" name="customer" placeholder="Nhập tên của bạn">
+            </div>
+            <div class="form-group col-sm-6">
+                <label for="phoneCustomer">Số điện thoại</label>
+                <input type="text" class="form-control" id="phoneCustomer" name="phone" placeholder="Nhập số điện thoại">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="EmailCustomer">Email</label>
+            <input type="email" class="form-control" id="EmailCustomer" aria-describedby="emailHelp" name="email" placeholder="Nhập email">
+            <small id="emailHelp" class="form-text text-muted">Chúng tôi sẽ gửi mail để xác nhận đơn hàng</small>
+        </div>
+        <div class="form-group">
+            <label for="addressCustomer">Địa chỉ</label>
+            <input type="text" class="form-control" id="addressCustomer" name="address" placeholder="Nhập địa chỉ nhận hàng">
+        </div>
+        <hr class="m-3" style="height: 5px;">
+        <table class="table container border border-secondary">
+            <thead class="border border-secondary">
+                <tr>
+                    <th scope="col">Tên</th>
+                    <th scope="col">Giá</th>
+                    <th scope="col">SL</th>
+                    <th scope="col">Thành tiền</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <td class="text-center" colspan="5">
+                        <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#addItem">
+                            Thêm sản phẩm
+                        </button>
+                    </td>
+                </tr>
+                <tr class="border-top boreder-primary">
+                    <td class="text-center" colspan="3">
+                        Tổng tiền (Đã bao gồm VAT)
+                    </td>
+                    <td  colspan="2">
+                        <span class="total-order"></span>
+                    </td>
+                </tr>
+            </tfoot>
+            <tbody></tbody>
+        </table>
+        <button type="submit" class="btn btn-primary" >Tạo đơn</button>
+    </form>
+</div>
+{{!-- Modal --}}
+<div class="modal fade" id="addItem" tabindex="-1" role="dialog" aria-labelledby="ItemsModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">Danh sách sản phẩm</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body d-flex flex-wrap">
+        {{#each sanPham}}
+            <button type="button" id="{{this._id}}" class="items m-1">{{this.name}}</button>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    var item_list =[
+        {{#each sanPham}}
+            {
+                id: "{{this._id}}",
+                name: "{{this.name}}",
+                price: "{{this.price}}"
+            },
+        {{/each}}
+    ]
+    let mountChange = function(data){
+        var numberNode = document.getElementById(data.id)
+        var number = Number.parseInt(numberNode.value)
+
+        var priceCell = numberNode.parentNode.parentNode.childNodes[1].innerHTML
+        var totalCell = numberNode.parentNode.parentNode.childNodes[3]
+        
+        var total = number*Number.parseInt(priceCell)
+        totalCell.innerHTML = total
+        totalPrice()
+    }
+    let totalPrice = function(){
+        var totalOrderCell = document.getElementsByClassName("total-order")[0]
+        var bodyTable =document.getElementsByClassName('table')[0].childNodes[5]
+        var itemRow =bodyTable.childNodes
+        var total = 0
+        itemRow.forEach(row =>{
+            var number = Number.parseInt(row.childNodes[3].innerHTML)
+            total = total + number
+        })
+        totalOrderCell.innerHTML = `<input type=number value="${total}" name="ThanhTien" readonly>`
+    }
+    document.addEventListener("DOMContentLoaded", function(){
+        const newRow = (itemId)=>{
+            $('#'+itemId).addClass('d-none')
+            var table = $('table')[0].getElementsByTagName("tbody")[0]
+            item_list.forEach(sanpham =>{
+                if(sanpham.id === itemId) {
+                    var newItemRow = table.insertRow()
+                    var nameCell = newItemRow.insertCell()
+                    nameCell.innerHTML = `${sanpham.name}`
+                    newItemRow.insertCell().innerHTML = `${sanpham.price}`
+                    newItemRow.insertCell().innerHTML = `
+                        <input type="text" class="d-none"  name="idItem[]" value="${sanpham.id}">
+                        <input type="number" class="form-control" id="mount${sanpham.id}" name="mount[]" min="1" max="100" value="1" onchange="mountChange(mount${sanpham.id})">
+                    `
+                    newItemRow.insertCell().innerHTML = `${sanpham.price}`
+                    newItemRow.insertCell().innerHTML = `<i class="fa-duotone fa-x"></i>`
+                    
+                    nameCell.scope = "row"
+                    totalPrice()
+                }
+            })
+        }
+
+        var btnItem = $("#addItem").find('.items')
+        btnItem.on("click", (e)=>newRow(e.target.id))
+    })
+
+    
+</script>

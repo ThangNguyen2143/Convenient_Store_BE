@@ -1,0 +1,20 @@
+<div class="container mt-4">
+    <div class="d-flex flex-wrap">
+       {{#each sanpham}}
+        <div class="card m-2 card-item" style="width: 18rem;">
+            <a href="/detail/{{this.slug}}">
+                <img class="card-img-top" src="{{this.image}}" alt="{{this.name}}">
+                <div class="card-body">
+                    <p class="card-text">{{this.name}}</p>
+                    <footer class="price-item ">{{convertMoney this.price}}</footer>
+                </div>
+            </a>
+        </div>
+        {{else}}
+        <div>
+            Loại hàng trống
+            <a href="/detail/create">Thêm sản phẩm mới</a>
+        </div>
+        {{/each}} 
+    </div>
+</div>

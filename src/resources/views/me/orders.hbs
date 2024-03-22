@@ -1,0 +1,138 @@
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-8 cart-item">
+            {{#each sanPham}}
+                <div class="media">
+                    <img class="mr-3" src="{{this.image}}" alt="Generic placeholder image" width="10%" height="10%">
+                    <div class="media-body">
+                        <h5 class="mt-0 media-heading">{{this.name}}</h5>
+                        
+                    </div>
+                    <div class="float-right mr-3">
+                        <input type="number" style="width:30px;" name="mount" id="mountProduct" value="{{this.mount}}" readonly>
+                        <span class="ml-2 price-item">
+                            {{convertMoney this.price}}
+                        </span>
+                        
+                    </div>
+                </div>
+            {{else}}
+                <p>
+                    Không có sản phẩm trong giỏ hàng.
+                    <a href="/">Đặt hàng ngay</a>
+                </p>
+            {{/each}}
+        </div>
+        <div class="col-4 cart-total">
+            <table class="table">
+                <tr>
+                    <th scope="row">Tạm tính</th>
+                    <td class="price-total"></td>
+                </tr>
+                <tr>
+                    <th scope="row">Phí vận chuyển</th>
+                    <td>{{convertMoney 15000 }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Tổng tiền</th>
+                    <td class="total-bill">{{convertMoney (sum 20000 15000) }}</td>
+                </tr>
+                <tr>
+                    <th scope="row" colspan="2" class="text-center">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmOrder">
+                            Đặt hàng
+                        </button>
+                    </th>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="titile">
+            <p>Gợi ý cho bạn</p>
+        </div>
+        <div class="d-flex">
+            <div class="card m-2">
+                <img class="card-img-top" src="..." alt="Sản phẩm nổi bật">
+                <div class="card-body">
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+            </div>
+
+            <div class="card m-2">
+                <img class="card-img-top" src="..." alt="Sản phẩm nổi bật">
+                <div class="card-body">
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+            </div>
+            
+            <div class="card m-2">
+                <img class="card-img-top" src="..." alt="Sản phẩm nổi bật">
+                <div class="card-body">
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+            </div>
+
+            <div class="card m-2">
+                <img class="card-img-top" src="..." alt="Sản phẩm nổi bật">
+                <div class="card-body">
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+            </div>
+        
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="confirmOrder" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">Xác nhận đặt hàng</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="/me/cash" method="POST" id="inforCustom">
+        <div class="form-group">
+                <label for="nameCustomer">Email address</label>
+                <input type="text" class="form-control" id="nameCustomer" name="name" placeholder="Nhập tên của bạn">
+                
+            </div>
+        <div class="form-group">
+                <label for="EmailCustomer">Email address</label>
+                <input type="email" class="form-control" id="EmailCustomer" aria-describedby="emailHelp" name="email" placeholder="Nhập email">
+                <small id="emailHelp" class="form-text text-muted">Chúng tôi sẽ gửi mail để xác nhận đơn hàng</small>
+            </div>
+            <div class="form-group">
+                <label for="addressCustomer">Địa chỉ nhận hàng</label>
+                <input type="text" class="form-control" id="addressCustomer" name="address" placeholder="Nhập địa chỉ nhận hàng">
+            </div>
+            <div class="form-group">
+                <label for="phoneCustomer">Số điện thoại</label>
+                <input type="text" class="form-control" id="phoneCustomer" name="phone" placeholder="Nhập số điện thoại">
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ</button>
+        <button type="submit" class="btn btn-primary" form="inforCustom">Đặt hàng</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        var price_item = $('.price-item')
+        var mount = $('input[name="mount"]')
+        var total = 0
+        for(var i = 0; i < price_item.length; i++) {
+           total += (Number.parseInt(price_item[i].innerText) * Number.parseInt(mount[i].value))
+        }
+        $('.price-total')[0].innerHTML = `
+           ${total}.000 VND
+        `
+        $('.total-bill')[0].innerHTML =`${total + 15}.000 VND` 
+    })
+</script>

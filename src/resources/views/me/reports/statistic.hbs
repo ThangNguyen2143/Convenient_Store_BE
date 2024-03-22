@@ -1,0 +1,94 @@
+<div class="col-md-3">
+{{#each months}}
+    <form action="#" method="get">
+        <input type="hidden" name="month" value="{{this.month}}">
+        <button type="submit">{{this.name}}</button>
+    </form>
+{{/each}}
+</div>
+<div class="col-md-9 container mt-4">
+    <div id="pie-chart">
+
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        $(function () {
+            Highcharts.chart('pie-chart',{
+                // Create the chart
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    type: 'pie'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: false
+                        },
+                        showInLegend: true
+                    }
+                },
+                title: {
+                    text: "{{title}}",
+                    align: 'left'
+                },
+                tooltip: {
+                    headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                    pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
+                },
+                accessibility: {
+                    announceNewData: {
+                        enabled: true
+                    },
+                    point: {
+                        valueSuffix: '%'
+                    }
+                },
+                series: [
+                    {
+                        name:'Loại',
+                        colorByPoint: true,
+                        data: [
+                        {{#each components}}
+                            {
+                                name: "{{this.name}}",
+                                y: {{this.percent}},
+                                drilldown: "{{this.name}}"
+                            },
+                        {{/each}}
+                        ]
+                    }
+                ],
+                {{!-- drilldown: {
+                    series: [
+                    {{#each types}}
+                    {
+                       name: {{this.name}},
+                        id: {{this.name}},
+                        data: [
+                        {{#each items}}
+                            [{{this.name}},{{this.percent}}],
+                        {{/each}}
+                        ] 
+                    },
+                    {{/each}}
+                    ] 
+                } --}}
+            })  
+        });
+
+    })
+        
+
+    </script>

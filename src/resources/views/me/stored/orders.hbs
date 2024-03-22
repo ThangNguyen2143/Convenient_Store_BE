@@ -1,0 +1,122 @@
+<div class="container mt-4">
+    <h2 class="dislay-3 text-center">Lưu trữ hoá đơn</h2>
+    <table class="table table-dark">
+        <thead>
+            <tr>
+                <th scope="col">Số hoá đơn</th>
+                <th scope="col">
+                    Name 
+                    {{{sortRender 'name' _sort}}}
+                </th>
+                <th scope="col">
+                    Ngày lập
+                    {{{sortRender 'updatedAt' _sort}}}
+                </th>
+                <th scope="col">
+                    Giá trị
+                    {{{sortRender 'ThanhTien' _sort}}}
+                </th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each orders}}
+            <tr>
+                <th scope="row" id="{{this._id}}">{{this.No}}</th>
+                <td>{{this.name}}</td>
+                <td>{{dateFormat this.updatedAt}}</td>
+                <td>{{convertMoney this.ThanhTien}}</td>
+                <td>
+                    <button type="button" class="btn btn-light" data-toggle="modal" data-id="{{this._id}}" data-target="#exportPDFModal">Xuất PDF</button>
+                    <button type="button" class="btn btn-light" data-toggle="modal" data-id="{{this._id}}" data-target="#deleteModal">Xoá</button>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="5" class="text-center">
+                    Bạn chưa có đơn hàng nào nào trong gian hàng!! 
+                    <a href="/me/create/order">Đăng sản phẩm</a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+<!-- Xác nhận xoá -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xoá hoá đơn</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" name="deleteForm">
+                    <div class="form-group">
+                        <p id="message-confirm-delete">Message:</p>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Không</button>
+                <button type="submit" class="btn btn-danger">Chắc chắn</a>
+            </div>
+        </div>
+    </div>  
+</div>
+<!-- Xác nhận xuất file -->
+<div class="modal fade" id="exportPDFModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportModalLabel">Xuất hoá đơn</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="GET" name="exportForm" id="exportForm" action="#">
+                    <div class="form-group">
+                        <p id="message-confirm-export">Message:</p>
+                        <input type="hidden" name="exportPDF" value="true">
+                        <input type="hidden" id="idOrderInput" name="idOrder">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Không</button>
+                <button type="submit" class="btn btn-primary" form="exportForm">Chắc chắn</a>
+            </div>
+        </div>
+    </div>  
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        $('#deleteModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var productId = button.data('id') // Extract info from data-* attributes
+            var modal = $(this)
+            var nameItem = $('#item_'+productId)[0].innerHTML
+
+            modal.find('#message-confirm-delete').text('Xoá sản phẩm "'+ nameItem +'" phải không?')
+            var deleteForm = document.forms['deleteForm']
+            deleteForm.action = '/detail/' +productId+'?_method=DELETE'
+            var btnAgree = modal.find('.btn-danger')[0]
+            btnAgree.onclick = ()=>{
+                deleteForm.submit()
+            }
+        })
+        $('#exportPDFModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var orderId = button.data('id') // Extract info from data-* attributes
+            var modal = $(this)
+            var NoItem = $('#'+orderId)[0].innerHTML
+
+            modal.find('#idOrderInput').attr('value', orderId)
+            modal.find('#message-confirm-export').text('Xuất hoá đơn "'+ NoItem +'" phải không?')
+            
+        })
+    })
+</script>
