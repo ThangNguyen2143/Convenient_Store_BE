@@ -1,12 +1,17 @@
+const moment = require('moment')
+const bcrypt = require("bcrypt");
+const { sign } = require("jsonwebtoken");
+const dotenv = require("dotenv");
 const SanPham = require('../models/SanPham')
 const HoaDon = require('../models/HoaDon')
 const Loai = require('../models/Loai')
 const ChiTietHoaDon = require('../models/ChiTietHoaDon')
-const moment = require('moment')
-// const KhachHang = require('../models/KhachHang')
+const Users = require('../models/Users')
+const KhachHang = require('../models/KhachHang') 
 const { mutipleMongooseToObject } = require('../../util/mongoose')
 const exportPDF = require('../../config/exportPDF/exportPDF')
 
+dotenv.config()
 class MeController{
 
     // [GET] /me/profile
@@ -139,24 +144,99 @@ class MeController{
     }
     // [GET] /me/signup
     signUpHandler(req, res, next){
-        res.render('me/sign-up-form')
+        res.render('me/sign-up-form',{title: "Đăng kí"})
     }
     // [POST] /me/signup
-    signUpPostHandler(req, res, next){
-        res.json(req.body)
+    async signUpPostHandler(req, res, next){
+        const {name, phone, email, address, passwd, confirmPassword} = req.body
+        const userfind = await Users.findOne({email});
+        if(userfind) {
+            res.status(400).json({message: "Account has already exists."})
+        }
+        if (!passwd == confirmPassword)
+            return res.status(400).json({ message: "Password don't match" });
+        const hash = bcrypt.hashSync(passwd, 10);
+        await Users.create({
+                email: email,
+                paswd: hash,
+            });
+        await KhachHang.create({
+            name,
+            phone,
+            address,
+            email
+        })
+        res.render('me/createSuccess',{
+            title: "Thành công",
+            message: "Bạn đã tạo tài khoản thành công",
+            pathHistory: "/me/signin"}
+        )
     }
+    
     // [GET] /me/signin
     signInHandler(req, res, next){
-        res.render('me/sign-in-form')
+        res.render('me/sign-in-form',{title: "Đăng nhập"})
     }
     // [POST] /me/signin
-    signInPostHandler(req, res, next){
-        res.json(req.body)
+    async signInPostHandler(req, res, next){
+        const { email, paswd } = req.body;
+
+        const user = await Users.findOne({ email });
+
+        if (!user) res.status(302).json({ error: "User Doesn't Exist" });
+
+        bcrypt.compare(paswd, user.paswd) 
+        .then(async (match) => {
+            if (!match) 
+                res.status(400).json({ error: "Wrong Username And Password Combination" });
+            const accessToken = sign(
+                { email: user.email, id: user._id },
+                process.env.JWT_SECRET,
+                { expiresIn: "3d" }
+            );
+            // Xử lý riêng theo từng trường hợp server
+            // res.json({ token: accessToken, username: username, id: user.id });
+            res.cookie('header',accessToken).redirect("/")
+        })
+        .catch(err =>res.json({message: err}))
     }
     // [GET] /me/signout
     signOutHandler(req, res, next){
-        req.logout()
-        res.redirect('/')
+        res.clearCookie('header').redirect('back')
+    }
+    
+    // [PUT] /user/update/:id - only update customer
+    async updateProfile(req, res) {
+        const { name, year, cccd, phone} = req.body
+        const { id_user} = req.params
+        await Customer.update(
+            {
+                custom_name: name,
+                year_of_birth: year,
+                id_card: cccd,
+                phone_number: phone,
+            },
+            {where: {UserId: id_user}}
+        )
+        res.status(200).json('success')
+    }
+    // [PUT] /user/changepassword/:id
+    async changePassword(req, res) {
+        const { oldPassword, newPassword } = req.body;
+        const user = await User.findOne({ where: { user_name: req.user.username } });
+
+        bcrypt.compare(oldPassword, user.password).then(async (match) => {
+            if (!match) res.json({ error: "Wrong Password Entered!" });
+
+            bcrypt.hash(newPassword, 10).then((hash) => {
+            User.update(
+                { password: hash },
+                { where: { user_name: req.user.user_name } }
+            );
+            res.status(200).json("SUCCESS");
+            });
+
+    });
     }
     // [GET] /me/create/order
     createOrderHandler(req, res, next){
@@ -202,7 +282,10 @@ class MeController{
         var hoadon = new HoaDon(orderByAdmin)
         hoadon.save()
         .then(()=>{
-            res.render('me/createSuccess')
+            res.render('me/createSuccess',{
+                title: "Thành công",
+                message: "Bạn đã tạo đơn hàng thành công",
+                pathHistory: "/me/create/order"})
         })
         .catch(next)
         

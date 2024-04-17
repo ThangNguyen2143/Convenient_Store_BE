@@ -6,23 +6,41 @@ class TrangChuController{
 
     // [GET] home
     index(req, res, next){
-        res.render('home',{
-            title: 'Trang chủ'
-        }) 
+        var login = false
+        if(req.UserId) login = true
+        Loai.find()
+        .then(type =>{
+                res.render('home',{
+                title: 'Trang chủ',
+                headType:{
+                    isLogin: login,
+                    productTypes: mutipleMongooseToObject(type)
+                }
+            })
+        })
+        
         
     }
-    typePage(req, res, next){
-        Loai.findOne({slug: req.params.slug})
-        .then(type => {
-            SanPham.find({ typeId: type.id })
-                .then(sanpham =>{
-                    res.render('typePage',{
-                        sanpham: mutipleMongooseToObject(sanpham)
-                    })
+    // [GET] /:typeProduct
+    async typePage(req, res, next){
+        
+        Loai.find()
+        .then(type =>{
+            let typeFind = {_id: null}
+            type.forEach(item => {if(item.slug === req.params.slug) return typeFind = item})
+            SanPham.find({ typeId: typeFind['_id'] })
+            .then(sanpham =>{
+                res.render('typePage',{
+                    title: typeFind.name,
+                    headType:{
+                        productTypes: mutipleMongooseToObject(type)
+                    },
+                    sanpham: mutipleMongooseToObject(sanpham)
                 })
-                .catch(next)
+            })
+            .catch(err =>res.json(err))
         })
-        .catch(next)
+       
     }
 }
 

@@ -2,14 +2,14 @@
     <div class="row">
         <div class="col-8 cart-item">
             {{#each sanPham}}
-                <div class="media">
-                    <img class="mr-3" src="{{this.image}}" alt="Generic placeholder image" width="10%" height="10%">
+                <div class="media my-2 border-bottom">
+                    <img class="align-self-center mr-3" src="{{this.image}}" alt="Generic placeholder image" width="10%" height="10%">
                     <div class="media-body">
                         <h5 class="mt-0 media-heading">{{this.name}}</h5>
                         
                     </div>
                     <div class="float-right mr-3">
-                        <input type="number" style="width:30px;" name="mount" id="mountProduct" value="{{this.mount}}" readonly>
+                        <span class="border border-secondary rounded p-2">{{this.mount}}</span>
                         <span class="ml-2 price-item">
                             {{convertMoney this.price}}
                         </span>

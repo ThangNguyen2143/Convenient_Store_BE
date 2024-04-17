@@ -2,13 +2,13 @@
     <form action="" method="POST">
         <h1 class="form-tittle">Đăng nhập</h1>
         <div class="form-group">
-            <label for="phoneNumber" class="lable">Số điện thoại</label>
-            <input type="text" class="form-control" id="phoneNumber" name="phone" placeholder="Nhập số điện thoại của bạn">
+            <label for="emailCustom" class="lable">Địa chỉ email</label>
+            <input type="email" class="form-control" id="emailCustom" name="email" placeholder="Nhập email đã đăng kí">
             <p class="phoneError"></p>
         </div>
         <div class="form-group">
             <label for="passwdSignIn" class="lable">Mật khẩu</label>
-            <input type="password" class="form-control" id="passwdSignIn" name="passwd" placeholder="Nhập mật khẩu">
+            <input type="password" class="form-control" id="passwdSignIn" name="paswd" placeholder="Nhập mật khẩu">
             <p class="passwdError"></p>
         </div>
         <div class="form-check">
@@ -21,6 +21,8 @@
                 <a href="#" class="form-link-help">Trợ giúp</a>
             </p>
         </div>
-        <button class="btn-logout"><a href="">Đăng kí</a></button>
+        <a href="/me/signup">
+            <button class="btn-logout">Đăng kí</button>
+        </a>
     </form>
 </div>
