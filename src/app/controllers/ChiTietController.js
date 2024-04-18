@@ -8,13 +8,17 @@ class ChiTietController{
 
     // [GET] /detail/:slug
     show(req, res, next){
-
+        var isLogin = req.UserId ? true : false;
         // Lấy dữ liệu từ request
         var slugvalue = req.params.slug
-        SanPham.findOne({slug: slugvalue})
-        .then(sanpham => {
+        Promise.all([SanPham.findOne({slug: slugvalue}),Loai.find()])
+        .then(([sanpham, type]) => {
             res.render('chiTiet/show', { 
                 sanpham: mongooseToObject(sanpham),
+                headType:{
+                    isLogin,
+                    productTypes: mutipleMongooseToObject(type),
+                }
             })},
         ) 
         .catch(next) 

@@ -2,6 +2,7 @@ const moment = require('moment')
 const bcrypt = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const dotenv = require("dotenv");
+
 const SanPham = require('../models/SanPham')
 const HoaDon = require('../models/HoaDon')
 const Loai = require('../models/Loai')
@@ -48,11 +49,28 @@ class MeController{
         res.json(req.body)
     }
     // [GET] /me/orders
-    ordersHandler(req, res, next){
-        ChiTietHoaDon.find({})
-        .then(details =>{
+    async ordersHandler(req, res, next){
+        if(req.query.name){
+            ChiTietHoaDon.findOneAndDelete({name: req.query.name})
+            .then((item)=>{
+                console.log(item)
+            })
+            .catch(err =>{
+                res.json(err)
+            })
+        }
+        var isLogin = req.UserId ? true : false;
+        var user =await Users.findById(req.UserId)
+        Promise.all([ChiTietHoaDon.find({}), Loai.find({}), KhachHang.findOne({email: user.email})])
+        .then(([details, type, customer]) =>{
            res.render('me/orders', {
-                sanPham: mutipleMongooseToObject(details)
+                sanPham: mutipleMongooseToObject(details),
+                customerInfo: mongooseToObject(customer),
+                headType:{
+                    isLogin,
+                    productTypes: mutipleMongooseToObject(type),
+                }
+                
            })
         })
     }
