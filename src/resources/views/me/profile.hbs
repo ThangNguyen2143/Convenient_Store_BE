@@ -1,0 +1,90 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col p-0"><img src="/img/imgProfile/gridimg.png" alt="" width="492px"></div>
+        <div class="col text-center"><img src="/img/imgProfile/circleimg.png" alt=""> <p>{{customIn4.name}}</p></div>
+        <div class="col p-0"><img src="/img/imgProfile/gridimg.png" alt="" width="492px"></div>
+    </div>
+    <div class="row my-2">
+        <div class="col-4 px-2">
+            <div class="accordion mx-3 rounded-sm" id="accordionExample">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                            <button class="btn btn-light btn-block text-left" type="button" data-toggle="collapse"
+                                data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Tài khoản của tôi
+                            </button>
+                        </h2>
+                    </div>
+            
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                        <div class="card-body">
+                            <form action="/me/profile" method="get" class="list-group">
+                                <Button id="basicinf" class="list-group-item list-group-item-action" type="submit" name="page" value="basicinf">Hồ sơ</Button>
+                                <li class="list-group-item list-group-item-action">Ngân hàng</li>
+                                <Button class="list-group-item list-group-item-action" id="basicaddress" type="submit" name="page" value="basicaddress">Địa chỉ</Button>
+                                <li class="list-group-item list-group-item-action">Đổi mật khẩu</li>
+                                <li class="list-group-item list-group-item-action">Cài đặt thông báo</li>
+                                <li class="list-group-item list-group-item-action">Những thiết lập riêng tư</li>
+                            
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingTwo">
+                        <h2 class="mb-0">
+                            <button class="btn btn-light btn-block text-left collapsed" type="button" data-toggle="collapse"
+                                data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Đơn mua
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <li class="list-group-item list-group-item-action">Tất cả</li>
+                                <li class="list-group-item list-group-item-action">Chờ thanh toán</li>
+                                <li class="list-group-item list-group-item-action">Vận chuyển</li>
+                                <li class="list-group-item list-group-item-action">Chờ giao hàng</li>
+                                <li class="list-group-item list-group-item-action">Hoàn thành</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingThree">
+                        <h2 class="mb-0">
+                            <button class="btn btn-light btn-block text-left collapsed" type="button" data-toggle="collapse"
+                                data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                Thông báo
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <li class="list-group-item list-group-item-action">Tất cả</li>
+                                <li class="list-group-item list-group-item-action">Cập nhật đơn hàng</li>
+                                <li class="list-group-item list-group-item-action">Khuyến mãi</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 border border-info">
+            {{> (lookup . 'content')}}
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded',()=>{
+        var listButton = document.getElementsByClassName('list-group-item')
+        var id = {{content}}
+        $(id).toggleClass('active')
+        console.log(id)
+    })
+    
+</script>

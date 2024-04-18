@@ -8,7 +8,7 @@ const Loai = require('../models/Loai')
 const ChiTietHoaDon = require('../models/ChiTietHoaDon')
 const Users = require('../models/Users')
 const KhachHang = require('../models/KhachHang') 
-const { mutipleMongooseToObject } = require('../../util/mongoose')
+const { mutipleMongooseToObject, mongooseToObject } = require('../../util/mongoose')
 const exportPDF = require('../../config/exportPDF/exportPDF')
 
 dotenv.config()
@@ -16,6 +16,27 @@ class MeController{
 
     // [GET] /me/profile
     profileHandler(req, res, next){
+        var content = "basicinf"
+        if(req.query.page) content = (req.query.page)
+        var login = (req.UserId) ? true: false;
+        Users.findById(req.UserId)
+        .then(user =>{
+           return user.email   
+        })
+        .then(email =>{
+            KhachHang.findOne({ email})
+            .then(customer =>{
+                
+                res.render('me/profile', {
+                    title: 'Trang cá nhân',
+                    content,
+                    customIn4: mongooseToObject(customer),
+                    headType:{
+                        isLogin: login,
+                    }
+                })
+            })
+        })
         
     }
     //[POST] /me/cash
@@ -292,24 +313,15 @@ class MeController{
     }
     // [GET] /me/report
     reportHandler(req, res, next){
-        var Sanpham = [
-            {
-                name:"y te",
-                percent:0,
-            }
-        ]
-        var component =[]
-        var typeShow =[
-            {
-                name:"report",
-                items:Sanpham,
-            }
-        ]
+
         var data={
             months: [],
             title: "Báo cáo thống kê",
-            components: component,
-            types:typeShow
+            components: [],
+            types:[],
+            headType:{
+                isLogin: (req.UserId != undefined ? true:false),
+            }
         }
         Promise.all([Loai.find(), HoaDon.find({ "$expr": { "$lte": [{ "$month": "$createdAt" }, 8] }})])
         .then(([type, orders]) => {
@@ -318,9 +330,7 @@ class MeController{
             var total = 0
             orders.forEach(order => {
                 var month = moment(order.createdAt).format("M")
-                if (months.length == 0) {
-                    months.push(month)
-                }
+                if (months.length == 0) months.push(month)
                 
                 order.detailOrder.forEach(item => {
                     items.push({
@@ -334,7 +344,6 @@ class MeController{
             
             var generalItem = []
             items.forEach(item => {
-                
                 if(generalItem.length === 0) {
                     generalItem.push({
                         idSp:item.idSp,
@@ -352,12 +361,10 @@ class MeController{
                                 idSp:item.idSp,
                                 mount: Number.parseInt(item.mount)
                             })
-                            
                             break
                             
                         }
                     }
-
                 }
             })
             var types = []
@@ -402,31 +409,14 @@ class MeController{
                 mountType.forEach(m =>{
                     total += Number.parseInt(m.mount)
                 })
-                // var ordersome ={}
-                // generalItem.forEach(detail=>{
-                //     sanpham.forEach(sp=>{
-                //         if(sp._id == detail.idSp){
-                //             mountType.forEach(types=>{
-                //                 if(types.idType == sp.typeId){
-                //                     console.log(Object.assign(ordersome, 
-                //                         {   name: sp.name,
-                //                             percent: Number.parseFloat((detail.mount/types.mount * 100).toFixed(2))
-                //                         }))
-                //                 }
-                //             })
-                            
-                //         }
-                //     })
-                // })
                 for (var i = 0; i < type.length; i++){
                     for (var j = 0; j < mountType.length; j++)
                         if(type[i]._id == mountType[j].idType){
-                            component.push({
+                            data.components.push({
                                 name: type[i].name,
                                 percent: Number.parseFloat(((Number.parseFloat(mountType[j].mount)/total) * 100).toFixed(2))
                             })
                         }
-
                 }
                 res.render('me/reports/statistic',data)
             })

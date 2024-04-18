@@ -23,7 +23,6 @@ class TrangChuController{
     }
     // [GET] /:typeProduct
     async typePage(req, res, next){
-        
         Loai.find()
         .then(type =>{
             let typeFind = {_id: null}
@@ -33,6 +32,7 @@ class TrangChuController{
                 res.render('typePage',{
                     title: typeFind.name,
                     headType:{
+                        isLogin: (req.UserId != undefined ? true:false),
                         productTypes: mutipleMongooseToObject(type)
                     },
                     sanpham: mutipleMongooseToObject(sanpham)
