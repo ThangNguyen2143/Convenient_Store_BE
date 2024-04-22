@@ -78,22 +78,21 @@ class MeController{
                 message: "Bạn đã đặt hàng thành công",
                 pathHistory: "/"})
         })
-        .catch(next)
+        .catch(err => next(err))
      
     }
     // [GET] /me/orders
     async ordersHandler(req, res, next){
+        var isLogin = req.UserId ? true : false;
+        var user =await Users.findById(req.UserId)
         if(req.query.name){
             ChiTietHoaDon.findOneAndDelete({name: req.query.name})
             .then((item)=>{
                 console.log(item)
             })
-            .catch(err =>{
-                res.json(err)
-            })
+            .catch(err => next(err))
+            
         }
-        var isLogin = req.UserId ? true : false;
-        var user =await Users.findById(req.UserId)
         Promise.all([ChiTietHoaDon.find({}), Loai.find({}), KhachHang.findOne({email: user.email})])
         .then(([details, type, customer]) =>{
            res.render('me/orders', {
@@ -107,6 +106,7 @@ class MeController{
                 
            })
         })
+        .catch(err => next(err))
     }
     //[POST] /me/orders
     orders(req, res, next) {
@@ -116,9 +116,7 @@ class MeController{
                 const chiTietHoaDon = new ChiTietHoaDon(req.body)
                 chiTietHoaDon.save()
                     .then(() => res.redirect('back'))
-                    .catch((err)=>{
-                        res.send(err)
-                    })
+                    .catch(err => next(err))
             }
             else{
                 var number = item.mount + Number.parseInt(req.body.mount)
@@ -126,7 +124,7 @@ class MeController{
                     .then(()=>{
                         res.redirect('back')})
                     
-                    .catch(next)
+                    .catch(err => next(err))
             }
         })
         .catch(next)  
@@ -194,6 +192,10 @@ class MeController{
             HoaDon.find({name: { $regex: req.query.q ? req.query.q : ""}})
             .then(orders =>{
                 res.render('me/stored/orders',{
+                    title: "Lưu trữ hoá đơn",
+                    headType:{
+                        isLogin: req.UserId ? true : false,
+                    },
                     orders: mutipleMongooseToObject(orders)
                 })
             })
@@ -210,6 +212,10 @@ class MeController{
         SanPham.findDeleted({})
         .then( sanPham =>
             res.render('me/trash-can', {
+                title: "Thùng rác",
+                headType:{
+                    isLogin: true,
+                },
                 sanPham: mutipleMongooseToObject(sanPham)
             })
         )
@@ -271,7 +277,7 @@ class MeController{
             // res.json({ token: accessToken, username: username, id: user.id });
             res.cookie('header',accessToken).redirect("/")
         })
-        .catch(err =>res.json({message: err}))
+        .catch(err => next(err))
     }
     // [GET] /me/signout
     signOutHandler(req, res, next){
@@ -319,6 +325,7 @@ class MeController{
                 sanPham: mutipleMongooseToObject(sanPham)
             })
         })
+        .catch(err => next(err));
     }
     //[POST] /me/orderByAdmin
     orderByAdminHandler(req, res, next){

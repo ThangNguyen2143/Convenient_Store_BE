@@ -10,7 +10,7 @@ class TrangChuController{
         if(req.UserId) login = true
         Loai.find()
         .then(type =>{
-                res.render('home',{
+            res.render('home',{
                 title: 'Trang chủ',
                 headType:{
                     isLogin: login,
@@ -18,7 +18,7 @@ class TrangChuController{
                 }
             })
         })
-        
+        .catch(err => next(err))
         
     }
     // [GET] /:typeProduct
@@ -38,7 +38,7 @@ class TrangChuController{
                     sanpham: mutipleMongooseToObject(sanpham)
                 })
             })
-            .catch(err =>res.json(err))
+            .catch(err => next(err))
         })
        
     }

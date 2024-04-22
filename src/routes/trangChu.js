@@ -3,8 +3,8 @@ const router = express.Router()
 
 
 const TrangChuController = require('../app/controllers/TrangChuController')
-
-router.get('/:slug', TrangChuController.typePage)
-router.get('/', TrangChuController.index) 
+const HandlerErr = require('../app/middlewares/HandlerErr')
+router.get('/:slug', TrangChuController.typePage, HandlerErr)
+router.get('/', TrangChuController.index, HandlerErr) 
 
 module.exports = router
