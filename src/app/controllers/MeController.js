@@ -41,12 +41,45 @@ class MeController{
         
     }
     //[POST] /me/cash
-    cashsHandler(req, res, next){
-        // var infCustomer = new KhachHang(req.body)
-        // infCustomer.save()
-
-        // console.log(infCustomer)
-        res.json(req.body)
+    async cashsHandler(req, res, next){
+        var dataForm = req.body
+        var detailOrder = await ChiTietHoaDon.find()
+        
+        for(var i = 0; i < detailOrder.length; i++){
+            var idSp = detailOrder[i].idSp
+            var mount = detailOrder[i].mount
+            SanPham.findById(idSp)
+            .then( detail=>{
+                var inventory = detail.stored - mount
+                Promise.all([SanPham.updateOne({_id:idSp},{stored: inventory}),ChiTietHoaDon.findOneAndDelete({idSp})])
+                .then(()=>{
+                    console.log("Cập nhật sản phẩm thành công")
+                })
+                .catch(next)
+            })
+            .catch(next)
+        }
+        var orderByUser ={
+            name: dataForm.name,
+            address: dataForm.address,
+            phone: dataForm.phone,
+            email: dataForm.email,
+            ThanhTien: dataForm.ThanhTien,
+            detailOrder
+        }
+        var hoadon = new HoaDon(orderByUser)
+        hoadon.save()
+        .then(()=>{
+            res.render('me/createSuccess',{
+                title: "Thành công",
+                headType:{
+                    isLogin: true,
+                },
+                message: "Bạn đã đặt hàng thành công",
+                pathHistory: "/"})
+        })
+        .catch(next)
+     
     }
     // [GET] /me/orders
     async ordersHandler(req, res, next){
@@ -64,6 +97,7 @@ class MeController{
         Promise.all([ChiTietHoaDon.find({}), Loai.find({}), KhachHang.findOne({email: user.email})])
         .then(([details, type, customer]) =>{
            res.render('me/orders', {
+                title: 'Giỏ hàng của bạn',
                 sanPham: mutipleMongooseToObject(details),
                 customerInfo: mongooseToObject(customer),
                 headType:{

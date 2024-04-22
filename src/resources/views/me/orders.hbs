@@ -142,6 +142,11 @@
                     placeholder="Nhập số điện thoại" 
                     value="{{customerInfo.phone}}">
             </div>
+            <div class="form-group">
+                <label for="totalbill">Số tiền phải thanh toán</label>
+                <input type="number" class="form-control" id="totalbill" name="ThanhTien"
+                    disabled>
+            </div>
         </form>
       </div>
       <div class="modal-footer">
@@ -191,6 +196,7 @@
         $('.price-total')[0].innerHTML = `${total}.000 VND`
           
         $('.total-bill')[0].innerHTML =`${total + 15}.000 VND` 
+        $('#totalbill').val((total+15)*1000)
         $('#confirmRemove').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget) // Button that triggered the modal
                 var recipient = button.data('whatever') // Extract info from data-* attributes
