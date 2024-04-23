@@ -1,38 +1,62 @@
 <div class="container mt-4">
-    <form action="" method="POST">
-        <div class="row text-center">
-            <h2>Đăng kí</h2>
-        </div>
-        <div class="form-group">
-            <label for="nameCustomer">Họ tên</label>
-            <input type="text" class="form-control" id="nameCustomer" name="name" placeholder="Nhập họ tên người dùng">
-        </div>
-        <div class="form-group">
-            <label for="phoneNumber">Số điện thoại</label>
-            <input type="text" class="form-control" name="phone" id="phoneNumber" aria-describedby="phoneHelp" placeholder="Nhập số điện thoại">
-            <small id="phoneHelp" class="form-text text-muted">Số điện thoại sẽ là tài khoản đăng nhập</small>
-        </div>
-        <div class="form-group">
-            <label for="emailCustomer">Email</label>
-            <input type="email" class="form-control" id="emailCustomer" name="email" aria-describedby="emailHelp" placeholder="Nhập email">
-            <small id="emailHelp" class="form-text text-muted">Chúng tôi sẽ không chia sẻ email của bạn với bất kì ai khác.</small>
-        </div>
-        <div class="form-group">
-            <label for="addressCustomer">Địa chỉ thường trú</label>
-            <input type="text" class="form-control" id="addressCustomer" name="address" placeholder="Nhập địa chỉ thường trú của bạn">
-        </div>
-        <div class="form-group">
-            <label for="resignPassword">Mật khẩu</label>
-            <input type="password" class="form-control" id="resignPassword" name="passwd" placeholder="Mật khẩu ít nhất 6 kí tự">
-        </div>
-        <div class="form-group">
-            <label for="confirmPassword">Nhập lại mật khẩu</label>
-            <input type="password" class="form-control" id="confirmPassword" placeholder="Nhập lại mật khẩu">
-        </div>
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label" for="exampleCheck1">Tôi đồng ý với <a>Điều khoản</a> và <a>Điều kiện</a> của cửa hàng </label>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+    <div class="row text-center">
+        <h2>Đăng kí thành viên</h2>
+    </div>
+    <div class="mx-4">
+        <form action="" method="POST" class="needs-validation" novalidate>
+            <div class="form-group">
+                <label for="nameCustomer">Họ tên</label>
+                <div class="col mb-3">
+                    <input type="text" class="form-control" id="nameCustomer" name="name"  placeholder="Nhập họ tên người dùng" required>
+                    <div class="invalid-tooltip">Vui lòng nhập họ tên của bạn</div>
+                </div>
+            </div>
+            <div class="form-group">
+                    <label for="phoneNumber">Số điện thoại</label>
+                <div class="col mb-3">
+
+                    <input type="text" class="form-control" name="phone" id="phoneNumber" required placeholder="Nhập số điện thoại">
+                    <div class="invalid-tooltip">Vui lòng nhập số điện thoại</div>
+                </div>
+            </div>
+            <div class="form-group">
+                    <label for="emailCustomer">Email</label>
+                <div class="col mb-3">
+
+                    <input type="email" class="form-control" id="emailCustomer" name="email" aria-describedby="emailHelp" required placeholder="Nhập email">
+                    <div class="invalid-tooltip">Vui lòng nhập email</div>
+                    <small id="emailHelp" class="form-text text-muted">Email sẽ dùng để đăng nhập.</small>
+                </div>
+            </div>
+            <div class="form-group">
+                    <label for="addressCustomer">Địa chỉ thường trú</label>
+                <div class="col mb-3">
+
+                    <input type="text" class="form-control" id="addressCustomer" name="address" required placeholder="Nhập địa chỉ thường trú của bạn">
+                    <div class="invalid-tooltip">Vui lòng nhập địa chỉ</div>
+                </div>
+            </div>
+            <div class="form-group">
+                    <label for="resignPassword">Mật khẩu</label>
+                <div class="col mb-3">
+
+                    <input type="password" class="form-control" id="resignPassword" name="passwd" required placeholder="Nhập mật khẩu của bạn">
+                    <div class="invalid-tooltip">Vui lòng nhập mật khẩu</div>
+                </div>
+            </div>
+            <div class="form-group">
+                    <label for="confirmPassword">Nhập lại mật khẩu</label>
+                <div class="col mb-3">
+
+                    <input type="password" class="form-control" id="confirmPassword" required placeholder="Nhập lại mật khẩu">
+                    <div class="invalid-tooltip">Vui lòng nhập lại mật khẩu</div>
+                </div>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                <label class="form-check-label" for="exampleCheck1">Tôi đồng ý với <a>Điều khoản</a> và <a>Điều kiện</a> của cửa hàng </label>
+            </div>
+            <button type="submit" class="btn btn-primary">Đăng ký</button>
+        </form>
+    </div>
 </div>

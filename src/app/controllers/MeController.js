@@ -262,12 +262,16 @@ class MeController{
 
         const user = await Users.findOne({ email });
 
-        if (!user) res.status(302).json({ error: "User Doesn't Exist" });
-
+        if (!user){
+            res.render('me/sign-in-form',{title: "Đăng nhập", alert:{type:'alert-warning', message: "Người dùng không tồn tại!!"}})
+            return
+        } 
         bcrypt.compare(paswd, user.paswd) 
         .then(async (match) => {
-            if (!match) 
-                res.status(400).json({ error: "Wrong Username And Password Combination" });
+            if (!match){
+                res.status(400).render('me/sign-in-form',{title: "Đăng nhập", alert:{type:'alert-warning', message: "Tài khoản hoặc mật khẩu không đúng"}})
+                return
+            }
             const accessToken = sign(
                 { email: user.email, id: user._id },
                 process.env.JWT_SECRET,
@@ -278,6 +282,7 @@ class MeController{
             res.cookie('header',accessToken).redirect("/")
         })
         .catch(err => next(err))
+        
     }
     // [GET] /me/signout
     signOutHandler(req, res, next){
