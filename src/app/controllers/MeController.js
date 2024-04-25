@@ -38,6 +38,7 @@ class MeController{
                 })
             })
         })
+        .catch(err => next())
         
     }
     //[POST] /me/cash
@@ -230,10 +231,13 @@ class MeController{
         const {name, phone, email, address, passwd, confirmPassword} = req.body
         const userfind = await Users.findOne({email});
         if(userfind) {
-            res.status(400).json({message: "Account has already exists."})
+            res
+            .status(400)
+            .render('me/sign-up-form',{title: "Đăng kí",alert:{message: "Email đã được đăng ký."}})
+            return
         }
-        if (!passwd == confirmPassword)
-            return res.status(400).json({ message: "Password don't match" });
+        if (passwd != confirmPassword)
+            return res.status(400).render('me/sign-up-form',{title: "Đăng kí",alert:{message: "Nhập lại mật khẩu không đúng."}})
         const hash = bcrypt.hashSync(passwd, 10);
         await Users.create({
                 email: email,
